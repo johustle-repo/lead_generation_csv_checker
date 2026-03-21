@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+build/
+dist/
+installer-dist/
+*.pyc
+*.pyo
+*.pyd
+*.spec
+
+# Generated sample and output files
+*_clean_for_upload.csv
+*_cleaned_usable.csv
+*_rows_with_issues.csv
+*_issue_details.csv
+*_reviewed_with_errors.xlsx
+*_missing_email.csv
+*_invalid_email.csv
+*_duplicate_email.csv
+*_rows_with_nulls.csv
+rows_with_nulls.csv
+sample_*.csv
+sample_*.xlsx
+valid_leads.csv
+updated-data_cleaned_usable.csv
+updated-data_rows_with_issues.csv
