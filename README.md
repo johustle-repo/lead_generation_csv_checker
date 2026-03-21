@@ -18,7 +18,7 @@ It helps you:
 
 If you already have the installer file:
 
-1. Download `ElmarLeadGenerationQualityStudioSetup.exe`.
+1. Download `Setup.exe`.
 2. Double-click the installer.
 3. Follow the setup steps.
 4. Launch `Elmar's Lead Generation Quality Studio` from the Start menu or desktop shortcut.
@@ -73,7 +73,7 @@ dist\ElmarsLeadGenerationQualityStudio.exe
 After the build completes, the installer will be created at:
 
 ```text
-installer-dist\ElmarLeadGenerationQualityStudioSetup.exe
+installer-dist\Setup.exe
 ```
 
 ## Run From Source
@@ -114,4 +114,4 @@ python check_nulls.py
 
 - CSV files cannot store cell fill colors.
 - Highlighted error cells are exported in Excel `.xlsx` format.
-- Build outputs such as `dist/` and `installer-dist/` are ignored in git, so they may not appear directly in the repository unless shared separately or uploaded as a release.
+- This repository can also include the packaged Windows app files when they are intentionally committed for download.

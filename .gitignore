@@ -24,3 +24,10 @@ sample_*.xlsx
 valid_leads.csv
 updated-data_cleaned_usable.csv
 updated-data_rows_with_issues.csv
+
+!dist/
+dist/*
+!dist/ElmarsLeadGenerationQualityStudio.exe
+!installer-dist/
+installer-dist/*
+!installer-dist/Setup.exe

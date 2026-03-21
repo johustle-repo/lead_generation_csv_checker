@@ -25,4 +25,4 @@ Write-Host "Building installer..."
 
 Write-Host ""
 Write-Host "Installer complete."
-Write-Host "Installer: installer-dist\ElmarLeadGenerationQualityStudioSetup.exe"
+Write-Host "Installer: installer-dist\Setup.exe"

@@ -37,7 +37,7 @@ This executable includes:
 After the build finishes, the installer will be here:
 
 ```text
-installer-dist\ElmarLeadGenerationQualityStudioSetup.exe
+installer-dist\Setup.exe
 ```
 
 ## Notes
