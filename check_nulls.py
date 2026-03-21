@@ -22,7 +22,8 @@ except ImportError:
 
 
 APP_TITLE = "Elmar's Lead Generation Quality Studio"
-NULLABLE_FIELDS = {"Import Trades"}
+NULLABLE_FIELDS = {"Import Trades", "LinkedIn"}
+OPTIONAL_COLUMNS = {"LinkedIn"}
 EXPECTED_COLUMNS = [
     "Date",
     "Company",
@@ -368,10 +369,16 @@ def analyze_csv(file_path):
 
     resolved_expected_columns = resolve_expected_columns(df.columns)
     missing_columns = [
-        column for column in EXPECTED_COLUMNS if column not in resolved_expected_columns
+        column
+        for column in EXPECTED_COLUMNS
+        if column not in OPTIONAL_COLUMNS and column not in resolved_expected_columns
     ]
     email_column = detect_email_column(df.columns)
-    required_fields = [col for col in df.columns if col not in NULLABLE_FIELDS]
+    required_fields = [
+        col
+        for col in df.columns
+        if canonical_export_column(col, resolved_expected_columns) not in NULLABLE_FIELDS
+    ]
 
     email_duplicates = set()
     if email_column:
