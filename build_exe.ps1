@@ -59,6 +59,7 @@ Invoke-Step "Building Windows executable..." {
         --clean `
         --windowed `
         --onefile `
+        --add-data "app-logo.png;." `
         --name $appName `
         $entryPoint
 }

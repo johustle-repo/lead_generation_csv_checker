@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 import re
+import sys
 import tkinter as tk
 from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
@@ -83,6 +84,7 @@ POPUP_THEMES = {
 }
 ERROR_FILL = "FFF2A8"
 HEADER_FILL = "E7D7C0"
+LOGO_FILENAME = "app-logo.png"
 
 
 def ensure_openpyxl():
@@ -103,6 +105,12 @@ def ensure_openpyxl():
     PatternFill = _PatternFill
     OPENPYXL_AVAILABLE = True
     return True
+
+
+def resource_path(filename):
+    if hasattr(sys, "_MEIPASS"):
+        return Path(sys._MEIPASS) / filename
+    return Path(__file__).resolve().parent / filename
 
 
 @dataclass
@@ -622,6 +630,8 @@ class PremiumCSVCheckerApp:
 
         self.selected_file = None
         self.analysis_result = None
+        self.icon_logo_image = None
+        self.hero_logo_image = None
 
         self.file_var = tk.StringVar(value="No file uploaded yet")
         self.status_var = tk.StringVar(value="Upload a CSV file to begin the analysis.")
@@ -640,6 +650,7 @@ class PremiumCSVCheckerApp:
         self.export_button_var = tk.StringVar(value="Save Export CSV")
 
         self.configure_styles()
+        self.load_brand_assets()
         self.build_ui()
         self.update_status_banner(
             "neutral",
@@ -647,6 +658,27 @@ class PremiumCSVCheckerApp:
             "Status Overview",
             "Upload a CSV file to begin the analysis.",
         )
+
+    def load_brand_assets(self):
+        logo_path = resource_path(LOGO_FILENAME)
+        if not logo_path.exists():
+            return
+
+        try:
+            self.icon_logo_image = tk.PhotoImage(file=str(logo_path))
+            self.root.iconphoto(True, self.icon_logo_image)
+
+            scale_factor = max(
+                1,
+                max(
+                    (self.icon_logo_image.width() + 139) // 140,
+                    (self.icon_logo_image.height() + 139) // 140,
+                ),
+            )
+            self.hero_logo_image = self.icon_logo_image.subsample(scale_factor, scale_factor)
+        except tk.TclError:
+            self.icon_logo_image = None
+            self.hero_logo_image = None
 
     def configure_styles(self):
         style = ttk.Style()
@@ -791,16 +823,26 @@ class PremiumCSVCheckerApp:
 
         hero = ttk.Frame(wrapper, padding=22, style="DarkCard.TFrame")
         hero.grid(row=0, column=0, sticky="ew")
-        hero.columnconfigure(0, weight=1)
+        hero.columnconfigure(1, weight=1)
+
+        if self.hero_logo_image is not None:
+            hero_logo = tk.Label(
+                hero,
+                image=self.hero_logo_image,
+                bg="#1f2d3d",
+                bd=0,
+                highlightthickness=0,
+            )
+            hero_logo.grid(row=0, column=0, rowspan=3, sticky="w", padx=(0, 20))
 
         ttk.Label(hero, text="Lead List Quality Studio", style="Hero.TLabel").grid(
-            row=0, column=0, sticky="w"
+            row=0, column=1, sticky="w"
         )
         ttk.Label(
             hero,
             text="Elmar's premium checker for lead-generation CSVs, with schema checks, row-level diagnostics, and clean export control.",
             style="HeroSub.TLabel",
-        ).grid(row=1, column=0, sticky="w", pady=(8, 0))
+        ).grid(row=1, column=1, sticky="w", pady=(8, 0))
         hero_stats = tk.Label(
             hero,
             text="Built for faster CSV review before Reply.io upload",
@@ -810,7 +852,7 @@ class PremiumCSVCheckerApp:
             padx=12,
             pady=6,
         )
-        hero_stats.grid(row=2, column=0, sticky="w", pady=(16, 0))
+        hero_stats.grid(row=2, column=1, sticky="w", pady=(16, 0))
 
         controls = ttk.Frame(wrapper, padding=18, style="Card.TFrame")
         controls.grid(row=1, column=0, sticky="ew", pady=(16, 14))
@@ -986,6 +1028,8 @@ class PremiumCSVCheckerApp:
         popup.configure(bg=theme["body_bg"])
         popup.resizable(False, False)
         popup.transient(self.root)
+        if self.icon_logo_image is not None:
+            popup.iconphoto(True, self.icon_logo_image)
 
         popup_width = 540
         popup_height = 360 if ask else 320
