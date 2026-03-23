@@ -2,6 +2,7 @@
 #define MyAppVersion "1.1.0"
 #define MyAppPublisher "Elmar Noche"
 #define MyAppExeName "ElmarsLeadGenerationQualityStudio.exe"
+#define MyAppBuildDir "dist\\ElmarsLeadGenerationQualityStudio"
 
 [Setup]
 AppId={{1C916B9D-7C3F-4B58-8E03-BC1B8C8C6A8C}
@@ -26,7 +27,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons:"
 
 [Files]
-Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppBuildDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

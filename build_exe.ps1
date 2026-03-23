@@ -5,6 +5,7 @@ Set-Location $projectRoot
 
 $appName = "ElmarsLeadGenerationQualityStudio"
 $entryPoint = "check_nulls.py"
+$distFolder = Join-Path "dist" $appName
 $venvPath = Join-Path $projectRoot ".venv"
 $pythonExe = Join-Path $venvPath "Scripts\python.exe"
 $systemPython = "python"
@@ -58,8 +59,11 @@ Invoke-Step "Building Windows executable..." {
         --noconfirm `
         --clean `
         --windowed `
-        --onefile `
+        --onedir `
+        --contents-directory "." `
+        --noupx `
         --icon "app-logo.ico" `
+        --version-file "version_info.txt" `
         --add-data "app-logo.png;." `
         --name $appName `
         $entryPoint
@@ -67,4 +71,4 @@ Invoke-Step "Building Windows executable..." {
 
 Write-Host ""
 Write-Host "Build complete."
-Write-Host "Executable: dist\$appName.exe"
+Write-Host "Executable: $distFolder\$appName.exe"

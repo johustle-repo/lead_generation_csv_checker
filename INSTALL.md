@@ -16,7 +16,7 @@ Current packaged version target: `1.1.0`
 After the build finishes, the app will be here:
 
 ```text
-dist\ElmarsLeadGenerationQualityStudio.exe
+dist\ElmarsLeadGenerationQualityStudio\ElmarsLeadGenerationQualityStudio.exe
 ```
 
 This executable includes:

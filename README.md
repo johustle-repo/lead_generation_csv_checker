@@ -25,13 +25,13 @@ If you already have the installer file:
 
 If Windows shows an unknown publisher warning, that is expected unless the installer is code-signed.
 
-### Option 2: Use the standalone executable
+### Option 2: Use the standalone app folder
 
-If you already have the standalone app file:
+If you already have the standalone app build:
 
-1. Download `ElmarsLeadGenerationQualityStudio.exe`.
-2. Place it in any folder on your PC.
-3. Double-click it to run the app.
+1. Download the `ElmarsLeadGenerationQualityStudio` folder.
+2. Keep all files inside that folder together.
+3. Run `ElmarsLeadGenerationQualityStudio.exe` from inside the folder.
 
 This option does not require a full installer.
 
@@ -57,7 +57,7 @@ If you are installing from this GitHub repository directly, build the app locall
 After the build completes, the app will be created at:
 
 ```text
-dist\ElmarsLeadGenerationQualityStudio.exe
+dist\ElmarsLeadGenerationQualityStudio\ElmarsLeadGenerationQualityStudio.exe
 ```
 
 ### Build the installer

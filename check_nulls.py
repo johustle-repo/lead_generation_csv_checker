@@ -22,8 +22,18 @@ except ImportError:
 
 
 APP_TITLE = "Elmar's Lead Generation Quality Studio"
-NULLABLE_FIELDS = {"Import Trades", "LinkedIn"}
-OPTIONAL_COLUMNS = {"LinkedIn"}
+NULLABLE_FIELDS = {"Date", "Import Trades", "LinkedIn"}
+OPTIONAL_COLUMNS = {"Date", "LinkedIn"}
+REFERENCE_WORKBOOK_CANDIDATES = ["Regions (1).xlsx", "Regions.xlsx"]
+COUNTRY_CODE_COLUMN_ALIASES = [
+    "Code",
+    "Country Code",
+    "CountryCode",
+    "Region Code",
+    "ISO Code",
+    "ISO2",
+    "ISO 3166-1 Alpha-2",
+]
 EXPECTED_COLUMNS = [
     "Date",
     "Company",
@@ -41,8 +51,8 @@ COLUMN_ALIASES = {
     "Website": ["Website URL", "Company Website", "Domain", "URL"],
     "First Name": ["Contact Person", "Contact Name", "FirstName", "Given Name"],
     "Email": ["Email Address", "Work Email", "Business Email", "Contact Email"],
-    "Country": ["Country Name", "Country/Region", "Region Country", "Location", "Country Code"],
-    "City": ["Town", "Location City", "City Name"],
+    "Country": ["Country Name", "Country/Region", "Region Country", "Location"],
+    "City": ["Town", "Location City", "City Name", "Capital"],
     "Import Trades": ["Import Trade", "Imports", "Trade Count", "Import Count"],
     "LinkedIn": ["LinkedIn Account", "LinkedIn URL", "LinkedIn Profile", "Linkedin"],
 }
@@ -86,6 +96,8 @@ POPUP_THEMES = {
 ERROR_FILL = "FFF2A8"
 HEADER_FILL = "E7D7C0"
 LOGO_FILENAME = "app-logo.png"
+REFERENCE_LOCATION_CACHE = None
+REFERENCE_CODE_MAP_CACHE = None
 
 
 def ensure_openpyxl():
@@ -112,6 +124,106 @@ def resource_path(filename):
     if hasattr(sys, "_MEIPASS"):
         return Path(sys._MEIPASS) / filename
     return Path(__file__).resolve().parent / filename
+
+
+def normalize_country_code(value):
+    if pd.isna(value):
+        return ""
+    return re.sub(r"[^A-Za-z0-9]+", "", str(value).strip().upper())
+
+
+def find_reference_workbook():
+    global REFERENCE_LOCATION_CACHE
+
+    if REFERENCE_LOCATION_CACHE is not None:
+        return REFERENCE_LOCATION_CACHE
+
+    candidates = []
+    for filename in REFERENCE_WORKBOOK_CANDIDATES:
+        candidates.append(resource_path(filename))
+        candidates.append(Path.home() / "Downloads" / filename)
+
+    for candidate in candidates:
+        if candidate.exists():
+            REFERENCE_LOCATION_CACHE = candidate
+            return candidate
+
+    REFERENCE_LOCATION_CACHE = None
+    return None
+
+
+def detect_reference_header_row(raw_df):
+    for index, row in raw_df.iterrows():
+        normalized_values = {
+            normalize_column_name(value)
+            for value in row.tolist()
+            if not pd.isna(value) and str(value).strip()
+        }
+        if {"country", "code", "capital"}.issubset(normalized_values):
+            return index
+    return None
+
+
+def load_reference_code_map():
+    global REFERENCE_CODE_MAP_CACHE
+
+    if REFERENCE_CODE_MAP_CACHE is not None:
+        return REFERENCE_CODE_MAP_CACHE
+
+    reference_path = find_reference_workbook()
+    if reference_path is None:
+        REFERENCE_CODE_MAP_CACHE = {}
+        return REFERENCE_CODE_MAP_CACHE
+
+    try:
+        workbook = pd.ExcelFile(reference_path)
+    except Exception:
+        REFERENCE_CODE_MAP_CACHE = {}
+        return REFERENCE_CODE_MAP_CACHE
+
+    code_map = {}
+    for sheet_name in workbook.sheet_names:
+        try:
+            raw_df = pd.read_excel(reference_path, sheet_name=sheet_name, header=None, dtype=str)
+        except Exception:
+            continue
+
+        header_row = detect_reference_header_row(raw_df)
+        if header_row is None:
+            continue
+
+        try:
+            sheet_df = pd.read_excel(reference_path, sheet_name=sheet_name, header=header_row, dtype=str)
+        except Exception:
+            continue
+
+        sheet_df = sheet_df.loc[:, ~sheet_df.columns.astype(str).str.startswith("Unnamed:")]
+        sheet_df.columns = [str(column).strip() for column in sheet_df.columns]
+
+        normalized_columns = {
+            normalize_column_name(column): column for column in sheet_df.columns
+        }
+        country_column = normalized_columns.get("country")
+        code_column = normalized_columns.get("code")
+        capital_column = normalized_columns.get("capital")
+        if not country_column or not code_column or not capital_column:
+            continue
+
+        for _, row in sheet_df.iterrows():
+            country_value = normalize_text(row.get(country_column))
+            code_value = normalize_country_code(row.get(code_column))
+            capital_value = normalize_text(row.get(capital_column))
+            if not code_value or is_blank(capital_value):
+                continue
+
+            code_map[code_value] = {
+                "country": "" if pd.isna(country_value) else str(country_value).strip(),
+                "capital": str(capital_value).strip(),
+                "sheet": sheet_name,
+            }
+
+    REFERENCE_CODE_MAP_CACHE = code_map
+    return REFERENCE_CODE_MAP_CACHE
 
 
 @dataclass
@@ -208,6 +320,81 @@ def resolve_expected_columns(columns):
     return resolved_columns
 
 
+def detect_country_code_column(columns):
+    normalized_lookup = {normalize_column_name(column): column for column in columns}
+    for candidate in COUNTRY_CODE_COLUMN_ALIASES:
+        actual_column = normalized_lookup.get(normalize_column_name(candidate))
+        if actual_column:
+            return actual_column
+    return None
+
+
+def values_look_like_country_codes(series, reference_codes):
+    sample_values = []
+    for value in series.tolist():
+        normalized = normalize_country_code(value)
+        if normalized:
+            sample_values.append(normalized)
+        if len(sample_values) >= 25:
+            break
+
+    if not sample_values:
+        return False
+
+    matched = sum(1 for value in sample_values if value in reference_codes)
+    minimum_required = max(1, (len(sample_values) * 3 + 4) // 5)
+    return matched >= minimum_required
+
+
+def apply_reference_city_mapping(df, resolved_expected_columns):
+    code_map = load_reference_code_map()
+    if not code_map:
+        return df, resolved_expected_columns, []
+
+    code_column = detect_country_code_column(df.columns)
+    if code_column is None:
+        country_column = resolved_expected_columns.get("Country")
+        if country_column and values_look_like_country_codes(df[country_column], set(code_map)):
+            code_column = country_column
+
+    if code_column is None:
+        return df, resolved_expected_columns, []
+
+    city_column = resolved_expected_columns.get("City")
+    if city_column is None:
+        df["City"] = pd.NA
+        city_column = "City"
+        resolved_expected_columns["City"] = "City"
+
+    corrections = []
+    for index, row in df.iterrows():
+        normalized_code = normalize_country_code(row.get(code_column))
+        if not normalized_code:
+            continue
+
+        reference_entry = code_map.get(normalized_code)
+        if not reference_entry:
+            continue
+
+        original_city = row.get(city_column)
+        original_city_text = "" if pd.isna(original_city) else str(original_city).strip()
+        corrected_city = reference_entry["capital"]
+        if original_city_text != corrected_city:
+            corrections.append(
+                {
+                    "row_index": index,
+                    "column": city_column,
+                    "original_value": original_city_text,
+                    "corrected_value": corrected_city,
+                    "issue_type": "Correction",
+                    "problem": f'City corrected to "{corrected_city}" based on country code',
+                }
+            )
+        df.at[index, city_column] = reference_entry["capital"]
+
+    return df, resolved_expected_columns, corrections
+
+
 def canonical_export_column(column_name, resolved_expected_columns):
     for expected_column, actual_column in resolved_expected_columns.items():
         if actual_column == column_name:
@@ -242,7 +429,7 @@ def build_issue_row_map(issue_details_df):
 
 
 def build_review_dataframe(source_df, issue_details_df, missing_columns):
-    review_df = source_df.copy()
+    review_df = source_df.copy().astype(object)
     resolved_expected_columns = resolve_expected_columns(review_df.columns)
 
     for column in missing_columns:
@@ -368,6 +555,7 @@ def analyze_csv(file_path):
         df[col] = df[col].apply(normalize_text)
 
     resolved_expected_columns = resolve_expected_columns(df.columns)
+    df, resolved_expected_columns, city_corrections = apply_reference_city_mapping(df, resolved_expected_columns)
     missing_columns = [
         column
         for column in EXPECTED_COLUMNS
@@ -407,9 +595,26 @@ def analyze_csv(file_path):
             }
         )
 
+    city_correction_map = {
+        correction["row_index"]: correction for correction in city_corrections
+    }
+
     for idx, row in df.iterrows():
         row_number = idx + 2
         row_issue_text = []
+
+        correction = city_correction_map.get(idx)
+        if correction:
+            row_issue_text.append(f'City: {correction["problem"]}')
+            issue_detail_rows.append(
+                {
+                    "Row Number": row_number,
+                    "Column": correction["column"],
+                    "Issue Type": correction["issue_type"],
+                    "Problem": correction["problem"],
+                    "Current Value": correction["original_value"],
+                }
+            )
 
         for field in required_fields:
             if is_blank(row.get(field)):
@@ -535,7 +740,8 @@ def save_dataframe(df, title, suggested_path):
     if not save_path:
         return None
 
-    df.to_csv(save_path, index=False)
+    # Excel on Windows reads accented characters reliably when the CSV includes a UTF-8 BOM.
+    df.to_csv(save_path, index=False, encoding="utf-8-sig")
     return Path(save_path)
 
 
@@ -566,7 +772,10 @@ def write_review_workbook(review_df, issue_details_df, missing_columns, save_pat
         cell.alignment = wrap_alignment
 
     issue_cells = set()
-    row_level_issues = issue_details_df[issue_details_df["Row Number"] != "Schema"]
+    if "Row Number" in issue_details_df.columns:
+        row_level_issues = issue_details_df[issue_details_df["Row Number"] != "Schema"]
+    else:
+        row_level_issues = pd.DataFrame(columns=["Row Number", "Column"])
     for issue in row_level_issues.itertuples(index=False):
         row_number = int(issue[0])
         column_name = canonical_export_column(issue[1], resolved_expected_columns)
