@@ -18,7 +18,7 @@ It helps you:
 
 If you already have the installer file:
 
-1. Download `Setup.exe`.
+1. Download the latest versioned installer, for example `ElmarsLeadGenerationQualityStudio-1.2.2-Setup.exe`.
 2. Double-click the installer.
 3. Follow the setup steps.
 4. Launch `Elmar's Lead Generation Quality Studio` from the Start menu or desktop shortcut.
@@ -73,7 +73,7 @@ dist\ElmarsLeadGenerationQualityStudio\ElmarsLeadGenerationQualityStudio.exe
 After the build completes, the installer will be created at:
 
 ```text
-installer-dist\Setup.exe
+installer-dist\ElmarsLeadGenerationQualityStudio-1.2.2-Setup.exe
 ```
 
 ## Run From Source

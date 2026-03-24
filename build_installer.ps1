@@ -23,6 +23,12 @@ if (-not $iscc) {
 Write-Host "Building installer..."
 & $iscc "installer.iss"
 
+$latestInstaller = Get-ChildItem -Path (Join-Path $projectRoot "installer-dist") -Filter "*.exe" |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1
+
 Write-Host ""
 Write-Host "Installer complete."
-Write-Host "Installer: installer-dist\Setup.exe"
+if ($latestInstaller) {
+    Write-Host "Installer: installer-dist\$($latestInstaller.Name)"
+}

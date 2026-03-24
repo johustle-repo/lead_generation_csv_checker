@@ -2,7 +2,7 @@
 
 This project can be packaged as a Windows desktop app.
 
-Current packaged version target: `1.2.1`
+Current packaged version target: `1.2.2`
 
 ## Option 1: Build an `.exe`
 
@@ -37,7 +37,7 @@ This executable includes:
 After the build finishes, the installer will be here:
 
 ```text
-installer-dist\Setup.exe
+installer-dist\ElmarsLeadGenerationQualityStudio-1.2.2-Setup.exe
 ```
 
 ## Notes

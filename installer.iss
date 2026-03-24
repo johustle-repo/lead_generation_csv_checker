@@ -1,20 +1,22 @@
 #define MyAppName "Elmar's Lead Generation Quality Studio"
-#define MyAppVersion "1.2.1"
+#define MyAppVersion "1.2.2"
 #define MyAppPublisher "Elmar Noche"
 #define MyAppExeName "ElmarsLeadGenerationQualityStudio.exe"
 #define MyAppBuildDir "dist\\ElmarsLeadGenerationQualityStudio"
 #define MyAppUninstallKey "{1C916B9D-7C3F-4B58-8E03-BC1B8C8C6A8C}_is1"
+#define MyInstallerBaseName "ElmarsLeadGenerationQualityStudio"
 
 [Setup]
 AppId={{1C916B9D-7C3F-4B58-8E03-BC1B8C8C6A8C}
 AppName={#MyAppName}
+AppVerName={#MyAppName} {#MyAppVersion}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\Elmar Lead Generation Quality Studio
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=installer-dist
-OutputBaseFilename=Setup
+OutputBaseFilename={#MyInstallerBaseName}-{#MyAppVersion}-Setup
 SetupIconFile=app-logo.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma
