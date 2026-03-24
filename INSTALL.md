@@ -2,7 +2,7 @@
 
 This project can be packaged as a Windows desktop app.
 
-Current packaged version target: `1.1.0`
+Current packaged version target: `1.2.1`
 
 ## Option 1: Build an `.exe`
 

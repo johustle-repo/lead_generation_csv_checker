@@ -24,7 +24,11 @@ except ImportError:
 APP_TITLE = "Elmar's Lead Generation Quality Studio"
 NULLABLE_FIELDS = {"Date", "Import Trades", "LinkedIn"}
 OPTIONAL_COLUMNS = {"Date", "LinkedIn"}
-REFERENCE_WORKBOOK_CANDIDATES = ["Regions (1).xlsx", "Regions.xlsx"]
+TIMEZONE_REFERENCE_CANDIDATES = [
+    "timezone_dataset.xlsx",
+    "Timezone Dataset/timezone_dataset.xlsx",
+]
+REGION_REFERENCE_WORKBOOK_CANDIDATES = ["Regions (1).xlsx", "Regions.xlsx"]
 COUNTRY_CODE_COLUMN_ALIASES = [
     "Code",
     "Country Code",
@@ -59,45 +63,243 @@ COLUMN_ALIASES = {
 NULL_LIKE_VALUES = {"", "null", "none", "n/a", "na", "nan"}
 EMAIL_REGEX = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
 PREVIEW_LIMIT = 250
+# Central theme palettes keep ttk styles and plain Tk widgets aligned in light and dark mode.
+UI_THEMES = {
+    "light": {
+        "root_bg": "#eee5d9",
+        "card_bg": "#fffaf2",
+        "dark_card_bg": "#1f2d3d",
+        "soft_card_bg": "#f7efe3",
+        "hero_title_fg": "#f8f4ed",
+        "hero_sub_fg": "#c9d6e3",
+        "hero_pill_bg": "#304155",
+        "hero_pill_fg": "#e7edf4",
+        "card_title_fg": "#6d4d32",
+        "body_fg": "#394250",
+        "card_body_fg": "#223046",
+        "metric_value_fg": "#1f2d3d",
+        "metric_label_fg": "#7b5b40",
+        "accent_button_bg": "#d29a3a",
+        "accent_button_fg": "#14202d",
+        "accent_button_active": "#e3ab4a",
+        "secondary_button_bg": "#ede2d2",
+        "secondary_button_fg": "#223046",
+        "secondary_button_active": "#f7ecdf",
+        "analyze_button_bg": "#2d6a9f",
+        "analyze_button_fg": "#ffffff",
+        "analyze_button_active": "#3a82bf",
+        "save_button_bg": "#2a7a49",
+        "save_button_fg": "#ffffff",
+        "save_button_active": "#35945b",
+        "muted_button_bg": "#dccdb8",
+        "muted_button_fg": "#3a4756",
+        "muted_button_active": "#e6d8c4",
+        "tree_bg": "#fffdf8",
+        "tree_fg": "#1f2d3d",
+        "tree_heading_bg": "#e7d7c0",
+        "tree_heading_fg": "#3b2d21",
+        "tree_select_bg": "#d9c2a7",
+        "tree_heading_active_bg": "#dcc5ab",
+        "notebook_bg": "#fffaf2",
+        "tab_bg": "#e8dbc9",
+        "tab_fg": "#324253",
+        "tab_selected_bg": "#fffaf2",
+        "tab_selected_fg": "#132434",
+        "tab_active_bg": "#efe3d2",
+        "summary_text_bg": "#fffdf8",
+        "summary_text_fg": "#1f2d3d",
+        "summary_text_select_bg": "#d9c2a7",
+        "summary_text_select_fg": "#132434",
+        "status_palette": {
+            "neutral": {"panel": "#f5ecde", "border": "#eadcc8", "title": "#7b5b40", "detail": "#223046", "badge_bg": "#d9e2ec", "badge_fg": "#223046"},
+            "success": {"panel": "#ecf8f0", "border": "#b9dfc4", "title": "#1f6f43", "detail": "#184a30", "badge_bg": "#1f6f43", "badge_fg": "#f7fff9"},
+            "error": {"panel": "#fff0f2", "border": "#efc0c8", "title": "#9a2032", "detail": "#5b1824", "badge_bg": "#b52b40", "badge_fg": "#fff7f8"},
+            "warning": {"panel": "#fff6eb", "border": "#edd2a8", "title": "#8b5a16", "detail": "#5c3d13", "badge_bg": "#b97718", "badge_fg": "#fff9f0"},
+            "info": {"panel": "#edf5ff", "border": "#c8dced", "title": "#285b8f", "detail": "#1b3d61", "badge_bg": "#336ea8", "badge_fg": "#f6fbff"},
+        },
+        "tree_tags": {
+            "issue_row": {"background": "#fff4b8", "foreground": "#4d3b00"},
+            "duplicate_issue_row": {"background": "#f8d7da", "foreground": "#7a1f2a"},
+            "schema_issue_row": {"background": "#ffe2a8", "foreground": "#5b3a00"},
+            "needs_review": {"background": "#fff4b8", "foreground": "#4d3b00"},
+            "duplicate_review": {"background": "#f8d7da", "foreground": "#7a1f2a"},
+            "clean_row": {"background": "#fafff7", "foreground": "#1f2d3d"},
+        },
+    },
+    "dark": {
+        "root_bg": "#101722",
+        "card_bg": "#17212f",
+        "dark_card_bg": "#0f1722",
+        "soft_card_bg": "#1b2838",
+        "hero_title_fg": "#f5f8fc",
+        "hero_sub_fg": "#aebfd0",
+        "hero_pill_bg": "#24374b",
+        "hero_pill_fg": "#e7f0fa",
+        "card_title_fg": "#f0c884",
+        "body_fg": "#c3d2e0",
+        "card_body_fg": "#e4edf7",
+        "metric_value_fg": "#f4f8fc",
+        "metric_label_fg": "#a9bed1",
+        "accent_button_bg": "#e0a84b",
+        "accent_button_fg": "#0f1722",
+        "accent_button_active": "#efba64",
+        "secondary_button_bg": "#2b3a4d",
+        "secondary_button_fg": "#e6eef6",
+        "secondary_button_active": "#354a62",
+        "analyze_button_bg": "#3d7fb5",
+        "analyze_button_fg": "#ffffff",
+        "analyze_button_active": "#4c95d0",
+        "save_button_bg": "#2f8c5f",
+        "save_button_fg": "#ffffff",
+        "save_button_active": "#39a370",
+        "muted_button_bg": "#425164",
+        "muted_button_fg": "#d5dfeb",
+        "muted_button_active": "#516379",
+        "tree_bg": "#142030",
+        "tree_fg": "#edf3f9",
+        "tree_heading_bg": "#223448",
+        "tree_heading_fg": "#f1d7a4",
+        "tree_select_bg": "#38536f",
+        "tree_heading_active_bg": "#2b4360",
+        "notebook_bg": "#17212f",
+        "tab_bg": "#223142",
+        "tab_fg": "#bdd0e3",
+        "tab_selected_bg": "#17212f",
+        "tab_selected_fg": "#f4f8fc",
+        "tab_active_bg": "#2b3d52",
+        "summary_text_bg": "#142030",
+        "summary_text_fg": "#edf3f9",
+        "summary_text_select_bg": "#38536f",
+        "summary_text_select_fg": "#ffffff",
+        "status_palette": {
+            "neutral": {"panel": "#1a2737", "border": "#2a3a4d", "title": "#f0c884", "detail": "#dbe7f3", "badge_bg": "#324559", "badge_fg": "#edf4fb"},
+            "success": {"panel": "#162c23", "border": "#25513f", "title": "#7ad6a7", "detail": "#d9f4e6", "badge_bg": "#2a7e58", "badge_fg": "#f7fff9"},
+            "error": {"panel": "#311720", "border": "#633142", "title": "#ff9dad", "detail": "#ffd8de", "badge_bg": "#a93f55", "badge_fg": "#fff7f8"},
+            "warning": {"panel": "#332511", "border": "#6a4d1c", "title": "#ffcb80", "detail": "#ffe6bf", "badge_bg": "#a66a1e", "badge_fg": "#fff9f0"},
+            "info": {"panel": "#16273a", "border": "#2f5378", "title": "#8fc1ff", "detail": "#daeafe", "badge_bg": "#3e72a9", "badge_fg": "#f6fbff"},
+        },
+        "tree_tags": {
+            "issue_row": {"background": "#4f4300", "foreground": "#fff2ae"},
+            "duplicate_issue_row": {"background": "#522833", "foreground": "#ffd6de"},
+            "schema_issue_row": {"background": "#5b3d0f", "foreground": "#ffe2a8"},
+            "needs_review": {"background": "#4f4300", "foreground": "#fff2ae"},
+            "duplicate_review": {"background": "#522833", "foreground": "#ffd6de"},
+            "clean_row": {"background": "#183024", "foreground": "#dcf5e6"},
+        },
+    },
+}
 POPUP_THEMES = {
-    "success": {
-        "header_bg": "#1f6f43",
-        "header_fg": "#f5fff9",
-        "body_bg": "#eefbf3",
-        "body_fg": "#143524",
-        "button_bg": "#2c8c57",
-        "button_fg": "#ffffff",
+    "light": {
+        "success": {
+            "header_bg": "#1f6f43",
+            "header_fg": "#f5fff9",
+            "body_bg": "#eefbf3",
+            "body_fg": "#143524",
+            "button_bg": "#2c8c57",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#e8ddcf",
+            "secondary_button_fg": "#223046",
+            "secondary_button_active_bg": "#ddd0c0",
+            "secondary_button_active_fg": "#223046",
+        },
+        "error": {
+            "header_bg": "#8d1f2d",
+            "header_fg": "#fff6f7",
+            "body_bg": "#fff0f2",
+            "body_fg": "#4f1420",
+            "button_bg": "#c63d53",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#e8ddcf",
+            "secondary_button_fg": "#223046",
+            "secondary_button_active_bg": "#ddd0c0",
+            "secondary_button_active_fg": "#223046",
+        },
+        "warning": {
+            "header_bg": "#8b5a16",
+            "header_fg": "#fff8ec",
+            "body_bg": "#fff7eb",
+            "body_fg": "#5b3a0f",
+            "button_bg": "#bf7a1d",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#e8ddcf",
+            "secondary_button_fg": "#223046",
+            "secondary_button_active_bg": "#ddd0c0",
+            "secondary_button_active_fg": "#223046",
+        },
+        "info": {
+            "header_bg": "#254e7b",
+            "header_fg": "#f4f9ff",
+            "body_bg": "#edf5ff",
+            "body_fg": "#17324f",
+            "button_bg": "#346ea8",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#e8ddcf",
+            "secondary_button_fg": "#223046",
+            "secondary_button_active_bg": "#ddd0c0",
+            "secondary_button_active_fg": "#223046",
+        },
     },
-    "error": {
-        "header_bg": "#8d1f2d",
-        "header_fg": "#fff6f7",
-        "body_bg": "#fff0f2",
-        "body_fg": "#4f1420",
-        "button_bg": "#c63d53",
-        "button_fg": "#ffffff",
-    },
-    "warning": {
-        "header_bg": "#8b5a16",
-        "header_fg": "#fff8ec",
-        "body_bg": "#fff7eb",
-        "body_fg": "#5b3a0f",
-        "button_bg": "#bf7a1d",
-        "button_fg": "#ffffff",
-    },
-    "info": {
-        "header_bg": "#254e7b",
-        "header_fg": "#f4f9ff",
-        "body_bg": "#edf5ff",
-        "body_fg": "#17324f",
-        "button_bg": "#346ea8",
-        "button_fg": "#ffffff",
+    "dark": {
+        "success": {
+            "header_bg": "#1a4e37",
+            "header_fg": "#effff6",
+            "body_bg": "#14231c",
+            "body_fg": "#dcf7e8",
+            "button_bg": "#2f8c5f",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#293746",
+            "secondary_button_fg": "#e2ebf4",
+            "secondary_button_active_bg": "#334558",
+            "secondary_button_active_fg": "#ffffff",
+        },
+        "error": {
+            "header_bg": "#671f2d",
+            "header_fg": "#fff0f2",
+            "body_bg": "#24141a",
+            "body_fg": "#ffdbe1",
+            "button_bg": "#b44458",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#293746",
+            "secondary_button_fg": "#e2ebf4",
+            "secondary_button_active_bg": "#334558",
+            "secondary_button_active_fg": "#ffffff",
+        },
+        "warning": {
+            "header_bg": "#6d4a16",
+            "header_fg": "#fff7e8",
+            "body_bg": "#241c12",
+            "body_fg": "#ffe9c1",
+            "button_bg": "#a97421",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#293746",
+            "secondary_button_fg": "#e2ebf4",
+            "secondary_button_active_bg": "#334558",
+            "secondary_button_active_fg": "#ffffff",
+        },
+        "info": {
+            "header_bg": "#24496f",
+            "header_fg": "#f2f8ff",
+            "body_bg": "#141f2b",
+            "body_fg": "#daeafe",
+            "button_bg": "#3b78b4",
+            "button_fg": "#ffffff",
+            "secondary_button_bg": "#293746",
+            "secondary_button_fg": "#e2ebf4",
+            "secondary_button_active_bg": "#334558",
+            "secondary_button_active_fg": "#ffffff",
+        },
     },
 }
 ERROR_FILL = "FFF2A8"
+DUPLICATE_FILL = "F5B7B1"
 HEADER_FILL = "E7D7C0"
 LOGO_FILENAME = "app-logo.png"
-REFERENCE_LOCATION_CACHE = None
-REFERENCE_CODE_MAP_CACHE = None
+SCANNED_DATA_FOLDER = "Scanned Data"
+ERROR_DATA_FOLDER = "Data With Error"
+TIMEZONE_REFERENCE_LOCATION_CACHE = None
+TIMEZONE_REFERENCE_CODE_MAP_CACHE = None
+REGION_REFERENCE_LOCATION_CACHE = None
+REGION_REFERENCE_CODE_MAP_CACHE = None
 
 
 def ensure_openpyxl():
@@ -132,24 +334,44 @@ def normalize_country_code(value):
     return re.sub(r"[^A-Za-z0-9]+", "", str(value).strip().upper())
 
 
-def find_reference_workbook():
-    global REFERENCE_LOCATION_CACHE
-
-    if REFERENCE_LOCATION_CACHE is not None:
-        return REFERENCE_LOCATION_CACHE
-
-    candidates = []
-    for filename in REFERENCE_WORKBOOK_CANDIDATES:
-        candidates.append(resource_path(filename))
-        candidates.append(Path.home() / "Downloads" / filename)
-
+def first_existing_path(candidates):
     for candidate in candidates:
         if candidate.exists():
-            REFERENCE_LOCATION_CACHE = candidate
             return candidate
-
-    REFERENCE_LOCATION_CACHE = None
     return None
+
+
+def find_timezone_reference_workbook():
+    global TIMEZONE_REFERENCE_LOCATION_CACHE
+
+    if TIMEZONE_REFERENCE_LOCATION_CACHE is not None:
+        return TIMEZONE_REFERENCE_LOCATION_CACHE
+
+    home = Path.home()
+    candidates = []
+    for filename in TIMEZONE_REFERENCE_CANDIDATES:
+        candidates.append(resource_path(filename))
+    candidates.append(home / "Desktop" / "Lead Generation" / "Dataset" / "Timezone Dataset" / "timezone_dataset.xlsx")
+    candidates.append(home / "Downloads" / "timezone_dataset.xlsx")
+
+    TIMEZONE_REFERENCE_LOCATION_CACHE = first_existing_path(candidates)
+    return TIMEZONE_REFERENCE_LOCATION_CACHE
+
+
+def find_region_reference_workbook():
+    global REGION_REFERENCE_LOCATION_CACHE
+
+    if REGION_REFERENCE_LOCATION_CACHE is not None:
+        return REGION_REFERENCE_LOCATION_CACHE
+
+    home = Path.home()
+    candidates = []
+    for filename in REGION_REFERENCE_WORKBOOK_CANDIDATES:
+        candidates.append(resource_path(filename))
+        candidates.append(home / "Downloads" / filename)
+
+    REGION_REFERENCE_LOCATION_CACHE = first_existing_path(candidates)
+    return REGION_REFERENCE_LOCATION_CACHE
 
 
 def detect_reference_header_row(raw_df):
@@ -164,66 +386,53 @@ def detect_reference_header_row(raw_df):
     return None
 
 
-def load_reference_code_map():
-    global REFERENCE_CODE_MAP_CACHE
+def load_timezone_reference_map():
+    global TIMEZONE_REFERENCE_CODE_MAP_CACHE
 
-    if REFERENCE_CODE_MAP_CACHE is not None:
-        return REFERENCE_CODE_MAP_CACHE
+    if TIMEZONE_REFERENCE_CODE_MAP_CACHE is not None:
+        return TIMEZONE_REFERENCE_CODE_MAP_CACHE
 
-    reference_path = find_reference_workbook()
+    reference_path = find_timezone_reference_workbook()
     if reference_path is None:
-        REFERENCE_CODE_MAP_CACHE = {}
-        return REFERENCE_CODE_MAP_CACHE
+        TIMEZONE_REFERENCE_CODE_MAP_CACHE = {}
+        return TIMEZONE_REFERENCE_CODE_MAP_CACHE
 
     try:
-        workbook = pd.ExcelFile(reference_path)
+        df = pd.read_excel(reference_path, dtype=str)
     except Exception:
-        REFERENCE_CODE_MAP_CACHE = {}
-        return REFERENCE_CODE_MAP_CACHE
+        TIMEZONE_REFERENCE_CODE_MAP_CACHE = {}
+        return TIMEZONE_REFERENCE_CODE_MAP_CACHE
+
+    df = df.fillna("")
+    df.columns = [str(column).strip() for column in df.columns]
+    normalized_columns = {normalize_column_name(column): column for column in df.columns}
+    original_code_column = normalized_columns.get("originalcountrycode")
+    mapped_code_column = normalized_columns.get("code")
+    capital_column = normalized_columns.get("capital")
+    country_name_column = normalized_columns.get("country")
+
+    if not original_code_column or not mapped_code_column or not capital_column:
+        TIMEZONE_REFERENCE_CODE_MAP_CACHE = {}
+        return TIMEZONE_REFERENCE_CODE_MAP_CACHE
 
     code_map = {}
-    for sheet_name in workbook.sheet_names:
-        try:
-            raw_df = pd.read_excel(reference_path, sheet_name=sheet_name, header=None, dtype=str)
-        except Exception:
+    for _, row in df.iterrows():
+        original_code = normalize_country_code(row.get(original_code_column))
+        mapped_code = normalize_country_code(row.get(mapped_code_column))
+        mapped_city = normalize_text(row.get(capital_column))
+        country_name = normalize_text(row.get(country_name_column)) if country_name_column else ""
+
+        if not original_code or not mapped_code or is_blank(mapped_city):
             continue
 
-        header_row = detect_reference_header_row(raw_df)
-        if header_row is None:
-            continue
-
-        try:
-            sheet_df = pd.read_excel(reference_path, sheet_name=sheet_name, header=header_row, dtype=str)
-        except Exception:
-            continue
-
-        sheet_df = sheet_df.loc[:, ~sheet_df.columns.astype(str).str.startswith("Unnamed:")]
-        sheet_df.columns = [str(column).strip() for column in sheet_df.columns]
-
-        normalized_columns = {
-            normalize_column_name(column): column for column in sheet_df.columns
+        code_map[original_code] = {
+            "country_name": "" if pd.isna(country_name) else str(country_name).strip(),
+            "mapped_code": mapped_code,
+            "mapped_city": str(mapped_city).strip(),
         }
-        country_column = normalized_columns.get("country")
-        code_column = normalized_columns.get("code")
-        capital_column = normalized_columns.get("capital")
-        if not country_column or not code_column or not capital_column:
-            continue
 
-        for _, row in sheet_df.iterrows():
-            country_value = normalize_text(row.get(country_column))
-            code_value = normalize_country_code(row.get(code_column))
-            capital_value = normalize_text(row.get(capital_column))
-            if not code_value or is_blank(capital_value):
-                continue
-
-            code_map[code_value] = {
-                "country": "" if pd.isna(country_value) else str(country_value).strip(),
-                "capital": str(capital_value).strip(),
-                "sheet": sheet_name,
-            }
-
-    REFERENCE_CODE_MAP_CACHE = code_map
-    return REFERENCE_CODE_MAP_CACHE
+    TIMEZONE_REFERENCE_CODE_MAP_CACHE = code_map
+    return TIMEZONE_REFERENCE_CODE_MAP_CACHE
 
 
 @dataclass
@@ -290,6 +499,10 @@ def normalize_text(value):
     return value
 
 
+def is_effectively_blank_row(row):
+    return all(is_blank(value) for value in row.tolist())
+
+
 def detect_email_column(columns):
     resolved_columns = resolve_expected_columns(columns)
     return resolved_columns.get("Email")
@@ -346,8 +559,8 @@ def values_look_like_country_codes(series, reference_codes):
     return matched >= minimum_required
 
 
-def apply_reference_city_mapping(df, resolved_expected_columns):
-    code_map = load_reference_code_map()
+def apply_reference_country_city_mapping(df, resolved_expected_columns):
+    code_map = load_timezone_reference_map()
     if not code_map:
         return df, resolved_expected_columns, []
 
@@ -359,6 +572,12 @@ def apply_reference_city_mapping(df, resolved_expected_columns):
 
     if code_column is None:
         return df, resolved_expected_columns, []
+
+    country_column = resolved_expected_columns.get("Country")
+    if country_column is None:
+        df["Country"] = pd.NA
+        country_column = "Country"
+        resolved_expected_columns["Country"] = "Country"
 
     city_column = resolved_expected_columns.get("City")
     if city_column is None:
@@ -376,9 +595,43 @@ def apply_reference_city_mapping(df, resolved_expected_columns):
         if not reference_entry:
             continue
 
+        # Keep the original code field synced with the mapped export code from the timezone reference.
+        corrected_code = reference_entry["mapped_code"]
+        if code_column != country_column:
+            original_code = row.get(code_column)
+            original_code_text = "" if pd.isna(original_code) else str(original_code).strip()
+            if original_code_text != corrected_code:
+                corrections.append(
+                    {
+                        "row_index": index,
+                        "column": code_column,
+                        "original_value": original_code_text,
+                        "corrected_value": corrected_code,
+                        "issue_type": "Correction",
+                        "problem": f'Code updated to "{corrected_code}" based on timezone dataset',
+                    }
+                )
+            df.at[index, code_column] = corrected_code
+
+        original_country = row.get(country_column)
+        original_country_text = "" if pd.isna(original_country) else str(original_country).strip()
+        corrected_country = corrected_code
+        if original_country_text != corrected_country:
+            corrections.append(
+                {
+                    "row_index": index,
+                    "column": country_column,
+                    "original_value": original_country_text,
+                    "corrected_value": corrected_country,
+                    "issue_type": "Correction",
+                    "problem": f'Country updated to "{corrected_country}" based on timezone dataset',
+                }
+            )
+        df.at[index, country_column] = corrected_country
+
         original_city = row.get(city_column)
         original_city_text = "" if pd.isna(original_city) else str(original_city).strip()
-        corrected_city = reference_entry["capital"]
+        corrected_city = reference_entry["mapped_city"]
         if original_city_text != corrected_city:
             corrections.append(
                 {
@@ -387,10 +640,10 @@ def apply_reference_city_mapping(df, resolved_expected_columns):
                     "original_value": original_city_text,
                     "corrected_value": corrected_city,
                     "issue_type": "Correction",
-                    "problem": f'City corrected to "{corrected_city}" based on country code',
+                    "problem": f'City updated to "{corrected_city}" based on timezone dataset',
                 }
             )
-        df.at[index, city_column] = reference_entry["capital"]
+        df.at[index, city_column] = corrected_city
 
     return df, resolved_expected_columns, corrections
 
@@ -426,6 +679,31 @@ def build_issue_row_map(issue_details_df):
                 continue
         issue_row_map[column] = sorted(set(row_numbers))
     return issue_row_map
+
+
+def build_duplicate_email_map(issue_details_df):
+    duplicate_email_map = {}
+    if issue_details_df.empty or "Issue Type" not in issue_details_df.columns:
+        return duplicate_email_map
+
+    duplicate_rows = issue_details_df[
+        (issue_details_df["Issue Type"] == "Duplicate")
+        & (issue_details_df["Column"] == "Email")
+    ]
+    if duplicate_rows.empty:
+        return duplicate_email_map
+
+    for issue in duplicate_rows.itertuples(index=False):
+        row_number = issue[0]
+        email_value = "" if pd.isna(issue[4]) else str(issue[4]).strip().lower()
+        if not email_value:
+            continue
+        duplicate_email_map.setdefault(email_value, []).append(int(row_number))
+
+    return {
+        email: sorted(set(row_numbers))
+        for email, row_numbers in duplicate_email_map.items()
+    }
 
 
 def build_review_dataframe(source_df, issue_details_df, missing_columns):
@@ -554,8 +832,13 @@ def analyze_csv(file_path):
     for col in df.columns:
         df[col] = df[col].apply(normalize_text)
 
+    # Ignore spreadsheet padding rows so trailing empty lines are not exported as highlighted errors.
+    df = df.loc[~df.apply(is_effectively_blank_row, axis=1)].reset_index(drop=True)
+    if df.empty:
+        raise ValueError("The selected CSV contains only blank rows.")
+
     resolved_expected_columns = resolve_expected_columns(df.columns)
-    df, resolved_expected_columns, city_corrections = apply_reference_city_mapping(df, resolved_expected_columns)
+    df, resolved_expected_columns, field_corrections = apply_reference_country_city_mapping(df, resolved_expected_columns)
     missing_columns = [
         column
         for column in EXPECTED_COLUMNS
@@ -595,17 +878,17 @@ def analyze_csv(file_path):
             }
         )
 
-    city_correction_map = {
-        correction["row_index"]: correction for correction in city_corrections
-    }
+    correction_map = {}
+    for correction in field_corrections:
+        correction_map.setdefault(correction["row_index"], []).append(correction)
 
     for idx, row in df.iterrows():
         row_number = idx + 2
         row_issue_text = []
 
-        correction = city_correction_map.get(idx)
-        if correction:
-            row_issue_text.append(f'City: {correction["problem"]}')
+        for correction in correction_map.get(idx, []):
+            display_column = canonical_export_column(correction["column"], resolved_expected_columns)
+            row_issue_text.append(f'{display_column}: {correction["problem"]}')
             issue_detail_rows.append(
                 {
                     "Row Number": row_number,
@@ -705,15 +988,21 @@ def analyze_csv(file_path):
 
 
 def default_clean_path(source_file):
-    return source_file.with_name(f"{source_file.stem}_cleaned_usable.csv")
+    return default_output_directory(source_file, SCANNED_DATA_FOLDER) / f"{source_file.stem}_cleaned_usable.csv"
 
 
 def default_review_path(source_file):
-    return source_file.with_name(f"{source_file.stem}_reviewed_with_errors.xlsx")
+    return default_output_directory(source_file, ERROR_DATA_FOLDER) / f"{source_file.stem}_reviewed_with_errors.xlsx"
 
 
 def default_issue_path(source_file):
-    return source_file.with_name(f"{source_file.stem}_issue_details.csv")
+    return default_output_directory(source_file, ERROR_DATA_FOLDER) / f"{source_file.stem}_issue_details.csv"
+
+
+def default_output_directory(source_file, folder_name):
+    output_directory = Path(source_file).resolve().parent / folder_name
+    output_directory.mkdir(parents=True, exist_ok=True)
+    return output_directory
 
 
 def make_unique_path(path):
@@ -745,11 +1034,22 @@ def save_dataframe(df, title, suggested_path):
     return Path(save_path)
 
 
+def write_csv_file(df, save_path):
+    save_path = Path(save_path)
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    # Excel on Windows reads accented characters reliably when the CSV includes a UTF-8 BOM.
+    df.to_csv(save_path, index=False, encoding="utf-8-sig")
+    return save_path
+
+
 def write_review_workbook(review_df, issue_details_df, missing_columns, save_path):
     if not ensure_openpyxl():
         raise RuntimeError(
             "Excel export requires the 'openpyxl' package. Install it with: pip install openpyxl"
         )
+
+    save_path = Path(save_path)
+    save_path.parent.mkdir(parents=True, exist_ok=True)
 
     workbook = Workbook()
     worksheet = workbook.active
@@ -759,6 +1059,7 @@ def write_review_workbook(review_df, issue_details_df, missing_columns, save_pat
 
     header_fill = PatternFill(fill_type="solid", fgColor=HEADER_FILL)
     error_fill = PatternFill(fill_type="solid", fgColor=ERROR_FILL)
+    duplicate_fill = PatternFill(fill_type="solid", fgColor=DUPLICATE_FILL)
     header_font = Font(bold=True, color="223046")
     wrap_alignment = Alignment(vertical="top", wrap_text=True)
 
@@ -771,7 +1072,7 @@ def write_review_workbook(review_df, issue_details_df, missing_columns, save_pat
         cell.font = header_font
         cell.alignment = wrap_alignment
 
-    issue_cells = set()
+    issue_cells = {}
     if "Row Number" in issue_details_df.columns:
         row_level_issues = issue_details_df[issue_details_df["Row Number"] != "Schema"]
     else:
@@ -782,22 +1083,32 @@ def write_review_workbook(review_df, issue_details_df, missing_columns, save_pat
         if column_name in column_positions:
             excel_row = row_number
             excel_column = column_positions[column_name]
-            issue_cells.add((excel_row, excel_column))
+            fill_kind = "duplicate" if str(issue[2]) == "Duplicate" else "error"
+            existing_kind = issue_cells.get((excel_row, excel_column))
+            if existing_kind != "duplicate":
+                issue_cells[(excel_row, excel_column)] = fill_kind
 
     for column_name in missing_columns:
         if column_name in column_positions:
             worksheet.cell(row=1, column=column_positions[column_name]).fill = error_fill
             for data_row in range(2, len(review_df) + 2):
-                issue_cells.add((data_row, column_positions[column_name]))
+                issue_cells[(data_row, column_positions[column_name])] = "error"
 
     for row_index, row in enumerate(export_df.itertuples(index=False), start=2):
         for column_index, value in enumerate(row, start=1):
-            display_value = "" if pd.isna(value) else str(value)
-            cell = worksheet.cell(row=row_index, column=column_index, value=display_value)
+            column_name = columns[column_index - 1]
+            if column_name == "Date":
+                cell = worksheet.cell(row=row_index, column=column_index, value="=TODAY()")
+                cell.number_format = "mm/dd/yyyy"
+            else:
+                display_value = "" if pd.isna(value) else str(value)
+                cell = worksheet.cell(row=row_index, column=column_index, value=display_value)
             cell.alignment = wrap_alignment
 
-            column_name = columns[column_index - 1]
-            if (row_index, column_index) in issue_cells:
+            cell_fill_kind = issue_cells.get((row_index, column_index))
+            if cell_fill_kind == "duplicate":
+                cell.fill = duplicate_fill
+            elif cell_fill_kind == "error":
                 cell.fill = error_fill
 
     for column_index, column_name in enumerate(columns, start=1):
@@ -839,15 +1150,20 @@ def save_review_workbook(review_df, issue_details_df, missing_columns, title, su
 class PremiumCSVCheckerApp:
     def __init__(self, root):
         self.root = root
+        self.current_theme_name = "light"
+        self.style = ttk.Style()
         self.root.title(APP_TITLE)
         self.root.geometry("1240x820")
         self.root.minsize(1040, 720)
-        self.root.configure(bg="#eee5d9")
+        self.root.configure(bg=self.get_theme()["root_bg"])
 
         self.selected_file = None
         self.analysis_result = None
         self.icon_logo_image = None
         self.hero_logo_image = None
+        self.current_status_tone = "neutral"
+        self.current_status_badge_text = "Waiting For Upload"
+        self.current_status_title = "Status Overview"
 
         self.file_var = tk.StringVar(value="No file uploaded yet")
         self.status_var = tk.StringVar(value="Upload a CSV file to begin the analysis.")
@@ -864,6 +1180,7 @@ class PremiumCSVCheckerApp:
         self.total_issues_var = tk.StringVar(value="0")
         self.status_badge_var = tk.StringVar(value="Waiting For Upload")
         self.export_button_var = tk.StringVar(value="Save Export CSV")
+        self.theme_button_var = tk.StringVar()
 
         self.configure_styles()
         self.load_brand_assets()
@@ -874,6 +1191,53 @@ class PremiumCSVCheckerApp:
             "Status Overview",
             "Upload a CSV file to begin the analysis.",
         )
+        self.apply_theme()
+
+    def get_theme(self):
+        return UI_THEMES[self.current_theme_name]
+
+    def update_theme_button_label(self):
+        if self.current_theme_name == "dark":
+            self.theme_button_var.set("Switch to Light Mode")
+        else:
+            self.theme_button_var.set("Switch to Dark Mode")
+
+    def apply_theme(self):
+        theme = self.get_theme()
+        self.root.configure(bg=theme["root_bg"])
+        self.configure_styles()
+        self.update_theme_button_label()
+
+        # ttk widgets pick up colors from styles; these direct updates cover the remaining tk widgets.
+        if hasattr(self, "hero_logo_label") and self.hero_logo_label is not None:
+            self.hero_logo_label.configure(bg=theme["dark_card_bg"])
+        if hasattr(self, "hero_stats"):
+            self.hero_stats.configure(bg=theme["hero_pill_bg"], fg=theme["hero_pill_fg"])
+        if hasattr(self, "summary_text"):
+            self.summary_text.configure(
+                bg=theme["summary_text_bg"],
+                fg=theme["summary_text_fg"],
+                insertbackground=theme["summary_text_fg"],
+                selectbackground=theme["summary_text_select_bg"],
+                selectforeground=theme["summary_text_select_fg"],
+            )
+        if hasattr(self, "issue_tree_widget"):
+            for tag_name, colors in theme["tree_tags"].items():
+                self.issue_tree_widget.tag_configure(tag_name, **colors)
+        if hasattr(self, "clean_tree"):
+            for tag_name, colors in theme["tree_tags"].items():
+                self.clean_tree.tag_configure(tag_name, **colors)
+
+            self.update_status_banner(
+            self.current_status_tone,
+            self.current_status_badge_text,
+            self.current_status_title,
+        )
+
+    def toggle_theme(self):
+        # Flip between the two palette sets and repaint the UI in place.
+        self.current_theme_name = "dark" if self.current_theme_name == "light" else "light"
+        self.apply_theme()
 
     def load_brand_assets(self):
         logo_path = resource_path(LOGO_FILENAME)
@@ -897,141 +1261,166 @@ class PremiumCSVCheckerApp:
             self.hero_logo_image = None
 
     def configure_styles(self):
-        style = ttk.Style()
+        theme = self.get_theme()
+        style = self.style
         if "clam" in style.theme_names():
             style.theme_use("clam")
 
-        style.configure("App.TFrame", background="#eee5d9")
-        style.configure("Card.TFrame", background="#fffaf2")
-        style.configure("DarkCard.TFrame", background="#1f2d3d")
-        style.configure("SoftCard.TFrame", background="#f7efe3")
+        style.configure("App.TFrame", background=theme["root_bg"])
+        style.configure("Card.TFrame", background=theme["card_bg"])
+        style.configure("DarkCard.TFrame", background=theme["dark_card_bg"])
+        style.configure("SoftCard.TFrame", background=theme["soft_card_bg"])
         style.configure(
             "Hero.TLabel",
-            background="#1f2d3d",
-            foreground="#f8f4ed",
+            background=theme["dark_card_bg"],
+            foreground=theme["hero_title_fg"],
             font=("Segoe UI Semibold", 24),
         )
         style.configure(
             "HeroSub.TLabel",
-            background="#1f2d3d",
-            foreground="#c9d6e3",
+            background=theme["dark_card_bg"],
+            foreground=theme["hero_sub_fg"],
             font=("Segoe UI", 10),
         )
         style.configure(
             "CardTitle.TLabel",
-            background="#fffaf2",
-            foreground="#6d4d32",
+            background=theme["card_bg"],
+            foreground=theme["card_title_fg"],
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
             "Body.TLabel",
-            background="#eee5d9",
-            foreground="#394250",
+            background=theme["root_bg"],
+            foreground=theme["body_fg"],
             font=("Segoe UI", 10),
         )
         style.configure(
             "CardBody.TLabel",
-            background="#fffaf2",
-            foreground="#223046",
+            background=theme["card_bg"],
+            foreground=theme["card_body_fg"],
             font=("Segoe UI", 10),
         )
         style.configure(
             "MetricValue.TLabel",
-            background="#fffaf2",
-            foreground="#1f2d3d",
+            background=theme["card_bg"],
+            foreground=theme["metric_value_fg"],
             font=("Segoe UI Semibold", 26),
         )
         style.configure(
             "MetricLabel.TLabel",
-            background="#fffaf2",
-            foreground="#7b5b40",
+            background=theme["card_bg"],
+            foreground=theme["metric_label_fg"],
             font=("Segoe UI", 9),
         )
         style.configure(
             "Accent.TButton",
             font=("Segoe UI Semibold", 10),
             padding=(16, 10),
-            background="#d29a3a",
-            foreground="#14202d",
+            background=theme["accent_button_bg"],
+            foreground=theme["accent_button_fg"],
             borderwidth=0,
         )
         style.configure(
             "Secondary.TButton",
             font=("Segoe UI", 10),
             padding=(14, 9),
-            background="#ede2d2",
-            foreground="#223046",
+            background=theme["secondary_button_bg"],
+            foreground=theme["secondary_button_fg"],
+            borderwidth=0,
+        )
+        style.configure(
+            "Theme.TButton",
+            font=("Segoe UI Semibold", 10),
+            padding=(14, 9),
+            background=theme["secondary_button_bg"],
+            foreground=theme["secondary_button_fg"],
             borderwidth=0,
         )
         style.configure(
             "Analyze.TButton",
             font=("Segoe UI Semibold", 10),
             padding=(16, 10),
-            background="#2d6a9f",
-            foreground="#ffffff",
+            background=theme["analyze_button_bg"],
+            foreground=theme["analyze_button_fg"],
             borderwidth=0,
         )
         style.configure(
             "Save.TButton",
             font=("Segoe UI Semibold", 10),
             padding=(14, 9),
-            background="#2a7a49",
-            foreground="#ffffff",
+            background=theme["save_button_bg"],
+            foreground=theme["save_button_fg"],
             borderwidth=0,
         )
         style.configure(
             "Muted.TButton",
             font=("Segoe UI", 10),
             padding=(14, 9),
-            background="#dccdb8",
-            foreground="#3a4756",
+            background=theme["muted_button_bg"],
+            foreground=theme["muted_button_fg"],
             borderwidth=0,
         )
-        style.map("Accent.TButton", background=[("active", "#e3ab4a")])
-        style.map("Analyze.TButton", background=[("active", "#3a82bf")])
-        style.map("Save.TButton", background=[("active", "#35945b")])
-        style.map("Secondary.TButton", background=[("active", "#f7ecdf")])
-        style.map("Muted.TButton", background=[("active", "#e6d8c4")])
+        style.map("Accent.TButton", background=[("active", theme["accent_button_active"])])
+        style.map("Analyze.TButton", background=[("active", theme["analyze_button_active"])])
+        style.map("Save.TButton", background=[("active", theme["save_button_active"])])
+        style.map("Secondary.TButton", background=[("active", theme["secondary_button_active"])])
+        style.map("Theme.TButton", background=[("active", theme["secondary_button_active"])])
+        style.map("Muted.TButton", background=[("active", theme["muted_button_active"])])
         style.configure(
             "Premium.Treeview",
-            background="#fffdf8",
-            foreground="#1f2d3d",
-            fieldbackground="#fffdf8",
+            background=theme["tree_bg"],
+            foreground=theme["tree_fg"],
+            fieldbackground=theme["tree_bg"],
             rowheight=28,
             borderwidth=0,
             font=("Segoe UI", 9),
         )
         style.configure(
             "Premium.Treeview.Heading",
-            background="#e7d7c0",
-            foreground="#3b2d21",
+            background=theme["tree_heading_bg"],
+            foreground=theme["tree_heading_fg"],
             font=("Segoe UI Semibold", 9),
             relief="flat",
         )
-        style.map("Premium.Treeview", background=[("selected", "#d9c2a7")])
+        style.map("Premium.Treeview", background=[("selected", theme["tree_select_bg"])])
         style.map(
             "Premium.Treeview.Heading",
-            background=[("active", "#dcc5ab")],
+            background=[("active", theme["tree_heading_active_bg"])],
         )
         style.configure(
             "Premium.TNotebook",
-            background="#fffaf2",
+            background=theme["notebook_bg"],
             borderwidth=0,
         )
         style.configure(
             "Premium.TNotebook.Tab",
-            background="#e8dbc9",
-            foreground="#324253",
+            background=theme["tab_bg"],
+            foreground=theme["tab_fg"],
             padding=(18, 10),
             font=("Segoe UI Semibold", 9),
         )
         style.map(
             "Premium.TNotebook.Tab",
-            background=[("selected", "#fffaf2"), ("active", "#efe3d2")],
-            foreground=[("selected", "#132434")],
+            background=[("selected", theme["tab_selected_bg"]), ("active", theme["tab_active_bg"])],
+            foreground=[("selected", theme["tab_selected_fg"])],
+        )
+        style.configure(
+            "Vertical.TScrollbar",
+            background=theme["card_bg"],
+            troughcolor=theme["soft_card_bg"],
+            borderwidth=0,
+            arrowcolor=theme["card_body_fg"],
+        )
+        style.configure(
+            "Horizontal.TScrollbar",
+            background=theme["card_bg"],
+            troughcolor=theme["soft_card_bg"],
+            borderwidth=0,
+            arrowcolor=theme["card_body_fg"],
         )
 
     def build_ui(self):
+        theme = self.get_theme()
         wrapper = ttk.Frame(self.root, padding=18, style="App.TFrame")
         wrapper.pack(fill="both", expand=True)
         wrapper.columnconfigure(0, weight=1)
@@ -1042,14 +1431,16 @@ class PremiumCSVCheckerApp:
         hero.columnconfigure(1, weight=1)
 
         if self.hero_logo_image is not None:
-            hero_logo = tk.Label(
+            self.hero_logo_label = tk.Label(
                 hero,
                 image=self.hero_logo_image,
-                bg="#1f2d3d",
+                bg=theme["dark_card_bg"],
                 bd=0,
                 highlightthickness=0,
             )
-            hero_logo.grid(row=0, column=0, rowspan=3, sticky="w", padx=(0, 20))
+            self.hero_logo_label.grid(row=0, column=0, rowspan=3, sticky="w", padx=(0, 20))
+        else:
+            self.hero_logo_label = None
 
         ttk.Label(hero, text="Lead List Quality Studio", style="Hero.TLabel").grid(
             row=0, column=1, sticky="w"
@@ -1059,16 +1450,16 @@ class PremiumCSVCheckerApp:
             text="Elmar's premium checker for lead-generation CSVs, with schema checks, row-level diagnostics, and clean export control.",
             style="HeroSub.TLabel",
         ).grid(row=1, column=1, sticky="w", pady=(8, 0))
-        hero_stats = tk.Label(
+        self.hero_stats = tk.Label(
             hero,
             text="Built for faster CSV review before Reply.io upload",
-            bg="#304155",
-            fg="#e7edf4",
+            bg=theme["hero_pill_bg"],
+            fg=theme["hero_pill_fg"],
             font=("Segoe UI Semibold", 9),
             padx=12,
             pady=6,
         )
-        hero_stats.grid(row=2, column=1, sticky="w", pady=(16, 0))
+        self.hero_stats.grid(row=2, column=1, sticky="w", pady=(16, 0))
 
         controls = ttk.Frame(wrapper, padding=18, style="Card.TFrame")
         controls.grid(row=1, column=0, sticky="ew", pady=(16, 14))
@@ -1087,8 +1478,8 @@ class PremiumCSVCheckerApp:
         self.status_badge = tk.Label(
             controls,
             textvariable=self.status_badge_var,
-            bg="#d9e2ec",
-            fg="#223046",
+            bg=theme["status_palette"]["neutral"]["badge_bg"],
+            fg=theme["status_palette"]["neutral"]["badge_fg"],
             font=("Segoe UI Semibold", 9),
             padx=12,
             pady=7,
@@ -1130,7 +1521,19 @@ class PremiumCSVCheckerApp:
         self.save_issue_button.grid(row=0, column=3)
         self.save_issue_button.state(["disabled"])
 
-        status_panel = tk.Frame(controls, bg="#f5ecde", highlightthickness=1, highlightbackground="#eadcc8")
+        ttk.Button(
+            button_row,
+            textvariable=self.theme_button_var,
+            command=self.toggle_theme,
+            style="Theme.TButton",
+        ).grid(row=0, column=4, padx=(10, 0))
+
+        status_panel = tk.Frame(
+            controls,
+            bg=theme["status_palette"]["neutral"]["panel"],
+            highlightthickness=1,
+            highlightbackground=theme["status_palette"]["neutral"]["border"],
+        )
         status_panel.grid(row=2, column=0, columnspan=3, sticky="ew", pady=(18, 0))
         status_panel.grid_columnconfigure(0, weight=1)
         self.status_panel = status_panel
@@ -1138,8 +1541,8 @@ class PremiumCSVCheckerApp:
         self.status_title_label = tk.Label(
             status_panel,
             text="Status Overview",
-            bg="#f5ecde",
-            fg="#7b5b40",
+            bg=theme["status_palette"]["neutral"]["panel"],
+            fg=theme["status_palette"]["neutral"]["title"],
             font=("Segoe UI Semibold", 10),
             anchor="w",
             padx=14,
@@ -1149,8 +1552,8 @@ class PremiumCSVCheckerApp:
         self.status_detail_label = tk.Label(
             status_panel,
             textvariable=self.status_var,
-            bg="#f5ecde",
-            fg="#223046",
+            bg=theme["status_palette"]["neutral"]["panel"],
+            fg=theme["status_palette"]["neutral"]["detail"],
             font=("Segoe UI", 10),
             anchor="w",
             justify="left",
@@ -1161,8 +1564,8 @@ class PremiumCSVCheckerApp:
         self.schema_detail_label = tk.Label(
             status_panel,
             textvariable=self.schema_var,
-            bg="#f5ecde",
-            fg="#506073",
+            bg=theme["status_palette"]["neutral"]["panel"],
+            fg=theme["status_palette"]["neutral"]["detail"],
             font=("Segoe UI", 9),
             anchor="w",
             justify="left",
@@ -1212,14 +1615,10 @@ class PremiumCSVCheckerApp:
         )
 
     def update_status_banner(self, tone, badge_text, status_title, detail_text=None):
-        palette = {
-            "neutral": {"panel": "#f5ecde", "border": "#eadcc8", "title": "#7b5b40", "detail": "#223046", "badge_bg": "#d9e2ec", "badge_fg": "#223046"},
-            "success": {"panel": "#ecf8f0", "border": "#b9dfc4", "title": "#1f6f43", "detail": "#184a30", "badge_bg": "#1f6f43", "badge_fg": "#f7fff9"},
-            "error": {"panel": "#fff0f2", "border": "#efc0c8", "title": "#9a2032", "detail": "#5b1824", "badge_bg": "#b52b40", "badge_fg": "#fff7f8"},
-            "warning": {"panel": "#fff6eb", "border": "#edd2a8", "title": "#8b5a16", "detail": "#5c3d13", "badge_bg": "#b97718", "badge_fg": "#fff9f0"},
-            "info": {"panel": "#edf5ff", "border": "#c8dced", "title": "#285b8f", "detail": "#1b3d61", "badge_bg": "#336ea8", "badge_fg": "#f6fbff"},
-        }
-        colors = palette[tone]
+        self.current_status_tone = tone
+        self.current_status_badge_text = badge_text
+        self.current_status_title = status_title
+        colors = self.get_theme()["status_palette"][tone]
         self.status_badge_var.set(badge_text)
         self.status_badge.configure(bg=colors["badge_bg"], fg=colors["badge_fg"])
         self.status_panel.configure(bg=colors["panel"], highlightbackground=colors["border"])
@@ -1238,7 +1637,7 @@ class PremiumCSVCheckerApp:
         primary_text=None,
         secondary_text="Not Now",
     ):
-        theme = POPUP_THEMES[tone]
+        theme = POPUP_THEMES[self.current_theme_name][tone]
         popup = tk.Toplevel(self.root)
         popup.title(title)
         popup.configure(bg=theme["body_bg"])
@@ -1320,10 +1719,10 @@ class PremiumCSVCheckerApp:
                 button_row,
                 text=secondary_text,
                 command=lambda: close_with(False),
-                bg="#e8ddcf",
-                fg="#223046",
-                activebackground="#ddd0c0",
-                activeforeground="#223046",
+                bg=theme["secondary_button_bg"],
+                fg=theme["secondary_button_fg"],
+                activebackground=theme["secondary_button_active_bg"],
+                activeforeground=theme["secondary_button_active_fg"],
                 relief="flat",
                 font=("Segoe UI", 10),
                 padx=16,
@@ -1420,6 +1819,11 @@ class PremiumCSVCheckerApp:
             foreground="#4d3b00",
         )
         self.issue_tree_widget.tag_configure(
+            "duplicate_issue_row",
+            background="#f8d7da",
+            foreground="#7a1f2a",
+        )
+        self.issue_tree_widget.tag_configure(
             "schema_issue_row",
             background="#ffe2a8",
             foreground="#5b3a00",
@@ -1441,6 +1845,11 @@ class PremiumCSVCheckerApp:
             "needs_review",
             background="#fff4b8",
             foreground="#4d3b00",
+        )
+        self.clean_tree.tag_configure(
+            "duplicate_review",
+            background="#f8d7da",
+            foreground="#7a1f2a",
         )
         self.clean_tree.tag_configure(
             "clean_row",
@@ -1616,6 +2025,7 @@ class PremiumCSVCheckerApp:
         )
 
     def build_long_report(self, result):
+        duplicate_email_map = build_duplicate_email_map(result.issue_details_df)
         lines = [
             f"File: {result.source_file}",
             f"Total Rows: {result.total_rows}",
@@ -1649,6 +2059,13 @@ class PremiumCSVCheckerApp:
             for _, row in result.error_summary_df.iterrows():
                 lines.append(f"- {row['Column']}: {row['Count']} non-null issue(s)")
 
+        if duplicate_email_map:
+            lines.extend(["", "Duplicate Emails:"])
+            for email, row_numbers in sorted(duplicate_email_map.items()):
+                lines.append(f"- {email}: rows {format_row_list(row_numbers)}")
+        else:
+            lines.extend(["", "Duplicate Emails:", "No duplicate emails found."])
+
         issue_row_map = build_issue_row_map(result.issue_details_df)
         if issue_row_map:
             lines.extend(["", "Issue Rows By Column:"])
@@ -1664,6 +2081,7 @@ class PremiumCSVCheckerApp:
 
     def build_issue_popup(self, result):
         issue_row_map = build_issue_row_map(result.issue_details_df)
+        duplicate_email_map = build_duplicate_email_map(result.issue_details_df)
         lines = [
             f"Rows with issues: {result.issue_rows}",
             f"Total issue entries: {result.total_issues}",
@@ -1703,6 +2121,13 @@ class PremiumCSVCheckerApp:
                     f"- {row['Column']}: {row['Count']} | rows {format_row_list(row_numbers)}"
                 )
 
+        lines.extend(["", "Duplicate emails:"])
+        if duplicate_email_map:
+            for email, row_numbers in sorted(duplicate_email_map.items()):
+                lines.append(f"- {email} | rows {format_row_list(row_numbers)}")
+        else:
+            lines.append("- None")
+
         return "\n".join(lines)
 
     def refresh_issue_table(self, issue_df):
@@ -1729,7 +2154,11 @@ class PremiumCSVCheckerApp:
         for row in preview_df.itertuples(index=False):
             values = ["" if pd.isna(value) else str(value) for value in row]
             tags = ()
-            if status_index is not None and values[status_index] == "Needs Review":
+            issues_index = columns.index("Issues Found") if "Issues Found" in columns else None
+            issues_text = values[issues_index] if issues_index is not None else ""
+            if "Duplicate email detected" in issues_text:
+                tags = ("duplicate_review",)
+            elif status_index is not None and values[status_index] == "Needs Review":
                 tags = ("needs_review",)
             elif status_index is not None:
                 tags = ("clean_row",)
@@ -1741,7 +2170,12 @@ class PremiumCSVCheckerApp:
             values = ["" if pd.isna(value) else str(value) for value in row]
             tags = ()
             if tree is self.issue_tree_widget:
-                tags = ("schema_issue_row",) if values and values[0] == "Schema" else ("issue_row",)
+                if values and values[0] == "Schema":
+                    tags = ("schema_issue_row",)
+                elif len(values) > 2 and values[2] == "Duplicate":
+                    tags = ("duplicate_issue_row",)
+                else:
+                    tags = ("issue_row",)
             tree.insert("", "end", values=values, tags=tags)
 
     def reset_clean_preview(self):
@@ -1814,10 +2248,9 @@ class PremiumCSVCheckerApp:
             return
 
         try:
-            save_path = save_dataframe(
+            save_path = write_csv_file(
                 self.analysis_result.clean_df,
-                "Save Cleaned CSV",
-                default_clean_path(self.analysis_result.source_file),
+                make_unique_path(default_clean_path(self.analysis_result.source_file)),
             )
         except Exception as exc:
             self.show_custom_popup(
@@ -1852,10 +2285,9 @@ class PremiumCSVCheckerApp:
             return
 
         try:
-            save_path = save_dataframe(
+            save_path = write_csv_file(
                 self.analysis_result.issue_details_df,
-                "Save Issue Report",
-                default_issue_path(self.analysis_result.source_file),
+                make_unique_path(default_issue_path(self.analysis_result.source_file)),
             )
         except Exception as exc:
             self.show_custom_popup(
